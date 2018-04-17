@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function mobile_forum_menu() {
+    $items['api/v1.0/forum'] = array(
+        'title' => 'Forums',
+        'page callback' => 'forum_page',
+        'type' => MENU_CALLBACK,
+        'access arguments' => array('access content'),
+        'file' => 'forum_api_1_0.inc',
+    );
+
+    $items['api/v1.0/forum_topics'] = array(
+        'title' => 'Forum Topics',
+        'page callback' => 'forum_topics',
+        'page arguments' => array(3),
+        'type' => MENU_CALLBACK,
+        'access arguments' => array('access content'),
+        'file' => 'forum_api_1_0.inc',
+    );
+
+    $items['api/v1.0/user_roles'] = array(
+        'title' => 'User roles',
+        'page callback' => 'mobile_api_user_roles',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+        'file' => 'forum_api_1_0.inc'
+    );
+
+    $items['mobile_api_info'] = array(
+        'title' => 'Module information',
+        'page callback' => 'mobile_api_info',
+        'type' => MENU_CALLBACK,
+        'access arguments' => array('access content'),
+    );
+
+    return $items;
+}
+
+function mobile_forum_query_forum_filter_alter(QueryAlterableInterface $query) {
+    // We get the desired forum id
+    $parsedInput = $query->getMetaData('restful_data_provider')
+            ->getRequest()
+            ->getParsedInput();
+    if (isset($parsedInput['filter']) && isset($parsedInput['filter']['forum_tid'])) {
+        $tid = $parsedInput['filter']['forum_tid'];
+        $query->innerJoin('forum_index', 'fr', 'node.nid = fr.nid');
+        $query->condition('fr.tid', $tid, '=');  // '=' operator
+    }
+}
+
+function mobile_api_info() {
+    $data = array(
+        'version' => '1.0'
+    );
+
+    return drupal_json_output($data);
+}

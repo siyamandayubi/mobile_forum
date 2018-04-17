@@ -1,0 +1,10 @@
+name = Forum Mobile
+description = The module provides back-end configuration for drupal mobile app
+dependencies[] = forum
+dependencies[] = entity
+dependencies[] = plug
+dependencies[] = restful
+core = 7.x
+
+registry_autoload[] = PSR-0
+registry_autoload[] = PSR-4
